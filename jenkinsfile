@@ -1,55 +1,27 @@
 pipeline {
     agent any
 
-    environment {
-        // Define any environment variables you need
-        NODE_VERSION = '12' // Example: Specify the Node.js version
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                checkout scm // This checks out the source code from your GitHub repository
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing dependencies...'
-                script {
-                    // Use Node Version Manager (nvm) or Docker to run npm install, or install Node.js directly on Jenkins agent
-                    sh 'npm install'
-                }
+                checkout scm // Checks out the source code from your GitHub repository
             }
         }
 
         stage('Run Tests') {
-            steps {
-                echo 'Running tests...'
-                // Replace with your actual test command
-                // Example: sh 'npm test'
-            }
+    steps {
+        echo 'Running tests...'
+        script {
+            // Run ESLint for JavaScript linting
+            sh 'npx eslint "**/*.js"'
+            // Run Stylelint for CSS linting
+            sh 'npx stylelint "**/*.css"'
+            // Run HTMLHint for HTML linting
+            sh 'npx htmlhint "**/*.html"'
         }
-
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                // Replace with your actual build command
-                // Example: sh 'npm run build'
-            }
-        }
-
-        stage('Archive Artifacts') {
-            steps {
-                echo 'Archiving artifacts...'
-                // Adjust the artifacts path according to your project structure
-                archiveArtifacts artifacts: 'dist/**, build/**', fingerprint: true
-            }
-        }
-
-        // Add or remove stages as necessary for your project
     }
-
+}       
+ 
     post {
         always {
             echo 'Pipeline execution completed.'
@@ -57,12 +29,12 @@ pipeline {
 
         success {
             echo 'Pipeline completed successfully!'
-            // Add any actions you want to perform on success
+            // Actions to perform on success, like notifications
         }
 
         failure {
             echo 'Pipeline failed.'
-            // Add any actions you want to perform on failure
+            // Actions to perform on failure, like notifications
         }
     }
 }
